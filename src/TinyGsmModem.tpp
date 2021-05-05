@@ -196,26 +196,16 @@ class TinyGsmModem {
     // check for any of the three for simplicity
     int8_t resp = thisModem().waitResponse(GF("+CREG:"), GF("+CGREG:"),
                                            GF("+CEREG:"));
-    //DBG("getRegistrationStatusXREG : send AT+CREG?, resp : ",resp);
     if (resp != 1 && resp != 2 && resp != 3) { return -1; }
     thisModem().streamSkipUntil(','); /* Skip format (0) */
     int status = thisModem().streamGetIntBefore(',');
     thisModem().waitResponse();
-    //DBG("getRegistrationStatusXREG : return status :", status);
-
-    //DBG("getRegistrationStatusXREG() : test ","+", regCommand, "?");
-    //thisModem().sendAT('+', regCommand, '?');
-    //String temp_stream = thisModem().stream.readString();
-    //DBG(temp_stream);
-
-    //DBG("status :", status);
-
     return status;
   }
 
   bool waitForNetworkImpl(uint32_t timeout_ms = 60000L) {
     for (uint32_t start = millis(); millis() - start < timeout_ms;) {
-      if (thisModem().isNetworkConnected()) { return true;DBG("waitForNetworkImpl : network OK "); }
+      if (thisModem().isNetworkConnected()) { return true; }
       delay(250);
     }
     return false;

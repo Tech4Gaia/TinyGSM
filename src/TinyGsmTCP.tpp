@@ -107,7 +107,7 @@ class TinyGsmTCP {
     // }
 
     // Writes data out on the client using the modem send functionality
-    size_t write(const uint8_t* buf, size_t size) override {
+    size_t write(const uint8_t* buf, size_t size) override {  // size_t write(const uint8_t* buf, size_t size) override {
       TINY_GSM_YIELD();
       at->maintain();
       return at->modemSend(buf, size, mux);
