@@ -29,6 +29,12 @@ class TinyGsmModem {
     thisModem().stream.flush();
     TINY_GSM_YIELD(); /* DBG("### AT:", cmd...); */
   }
+  template <typename... Args>
+  inline void sendATsend(Args... cmd) {
+    thisModem().streamWrite("AT", cmd..., thisModem().gsmN);
+    thisModem().stream.flush();
+    TINY_GSM_YIELD(); /* DBG("### AT:", cmd...); */
+  }
   void setBaud(uint32_t baud) {
     thisModem().setBaudImpl(baud);
   }
@@ -53,8 +59,8 @@ class TinyGsmModem {
   /*
    * Power functions
    */
-  bool restart(const char* pin = NULL) {
-    return thisModem().restartImpl(pin);
+  bool restart() {
+    return thisModem().restartImpl();
   }
   bool poweroff() {
     return thisModem().powerOffImpl();
@@ -141,7 +147,7 @@ class TinyGsmModem {
     res1.replace("\rOK\r", "");
     res1.trim();
 
-    thisModem().sendAT(GF("+GMM"));
+    thisModem().sendAT(GF("+CGMM")); ////////////////  thisModem().sendAT(GF("+GMM"));
     String res2;
     if (thisModem().waitResponse(1000L, res2) != 1) { return "unknown"; }
     res2.replace("\r\nOK\r\n", "");
@@ -190,16 +196,26 @@ class TinyGsmModem {
     // check for any of the three for simplicity
     int8_t resp = thisModem().waitResponse(GF("+CREG:"), GF("+CGREG:"),
                                            GF("+CEREG:"));
+    //DBG("getRegistrationStatusXREG : send AT+CREG?, resp : ",resp);
     if (resp != 1 && resp != 2 && resp != 3) { return -1; }
     thisModem().streamSkipUntil(','); /* Skip format (0) */
-    int status = thisModem().streamGetIntBefore('\n');
+    int status = thisModem().streamGetIntBefore(',');
     thisModem().waitResponse();
+    //DBG("getRegistrationStatusXREG : return status :", status);
+
+    //DBG("getRegistrationStatusXREG() : test ","+", regCommand, "?");
+    //thisModem().sendAT('+', regCommand, '?');
+    //String temp_stream = thisModem().stream.readString();
+    //DBG(temp_stream);
+
+    //DBG("status :", status);
+
     return status;
   }
 
   bool waitForNetworkImpl(uint32_t timeout_ms = 60000L) {
     for (uint32_t start = millis(); millis() - start < timeout_ms;) {
-      if (thisModem().isNetworkConnected()) { return true; }
+      if (thisModem().isNetworkConnected()) { return true;DBG("waitForNetworkImpl : network OK "); }
       delay(250);
     }
     return false;
