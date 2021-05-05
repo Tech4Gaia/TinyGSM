@@ -6,8 +6,8 @@
  * @date       Jan 2019
  */
 
-#ifndef SRC_TINYGSMCLIENTSEQUANSMONARCH_H_
-#define SRC_TINYGSMCLIENTSEQUANSMONARCH_H_
+#ifndef SRC_TINYGSMCLIENTSEQUANSMONARCHPYCOM_H_
+#define SRC_TINYGSMCLIENTSEQUANSMONARCHPYCOM_H_
 
 // #define TINY_GSM_DEBUG Serial
 
@@ -24,6 +24,7 @@
 #include "TinyGsmTime.tpp"
 
 #define GSM_NL "\r\n"
+#define GSM_N "\r"
 static const char GSM_OK[] TINY_GSM_PROGMEM    = "OK" GSM_NL;
 static const char GSM_ERROR[] TINY_GSM_PROGMEM = "ERROR" GSM_NL;
 #if defined       TINY_GSM_DEBUG
@@ -51,40 +52,40 @@ enum SocketStatus {
   SOCK_OPENING                = 6,
 };
 
-class TinyGsmSequansMonarch
-    : public TinyGsmModem<TinyGsmSequansMonarch>,
-      public TinyGsmGPRS<TinyGsmSequansMonarch>,
-      public TinyGsmTCP<TinyGsmSequansMonarch, TINY_GSM_MUX_COUNT>,
-      public TinyGsmSSL<TinyGsmSequansMonarch>,
-      public TinyGsmCalling<TinyGsmSequansMonarch>,
-      public TinyGsmSMS<TinyGsmSequansMonarch>,
-      public TinyGsmTime<TinyGsmSequansMonarch>,
-      public TinyGsmTemperature<TinyGsmSequansMonarch> {
-  friend class TinyGsmModem<TinyGsmSequansMonarch>;
-  friend class TinyGsmGPRS<TinyGsmSequansMonarch>;
-  friend class TinyGsmTCP<TinyGsmSequansMonarch, TINY_GSM_MUX_COUNT>;
-  friend class TinyGsmSSL<TinyGsmSequansMonarch>;
-  friend class TinyGsmCalling<TinyGsmSequansMonarch>;
-  friend class TinyGsmSMS<TinyGsmSequansMonarch>;
-  friend class TinyGsmTime<TinyGsmSequansMonarch>;
-  friend class TinyGsmTemperature<TinyGsmSequansMonarch>;
+class TinyGsmSequansMonarchPycom
+    : public TinyGsmModem<TinyGsmSequansMonarchPycom>,
+      public TinyGsmGPRS<TinyGsmSequansMonarchPycom>,
+      public TinyGsmTCP<TinyGsmSequansMonarchPycom, TINY_GSM_MUX_COUNT>,
+      public TinyGsmSSL<TinyGsmSequansMonarchPycom>,
+      public TinyGsmCalling<TinyGsmSequansMonarchPycom>,
+      public TinyGsmSMS<TinyGsmSequansMonarchPycom>,
+      public TinyGsmTime<TinyGsmSequansMonarchPycom>,
+      public TinyGsmTemperature<TinyGsmSequansMonarchPycom> {
+  friend class TinyGsmModem<TinyGsmSequansMonarchPycom>;
+  friend class TinyGsmGPRS<TinyGsmSequansMonarchPycom>;
+  friend class TinyGsmTCP<TinyGsmSequansMonarchPycom, TINY_GSM_MUX_COUNT>;
+  friend class TinyGsmSSL<TinyGsmSequansMonarchPycom>;
+  friend class TinyGsmCalling<TinyGsmSequansMonarchPycom>;
+  friend class TinyGsmSMS<TinyGsmSequansMonarchPycom>;
+  friend class TinyGsmTime<TinyGsmSequansMonarchPycom>;
+  friend class TinyGsmTemperature<TinyGsmSequansMonarchPycom>;
 
   /*
    * Inner Client
    */
  public:
-  class GsmClientSequansMonarch : public GsmClient {
-    friend class TinyGsmSequansMonarch;
+  class GsmClientSequansMonarchPycom : public GsmClient {
+    friend class TinyGsmSequansMonarchPycom;
 
    public:
-    GsmClientSequansMonarch() {}
+    GsmClientSequansMonarchPycom() {}
 
-    explicit GsmClientSequansMonarch(TinyGsmSequansMonarch& modem,
+    explicit GsmClientSequansMonarchPycom(TinyGsmSequansMonarchPycom& modem,
                                      uint8_t                mux = 1) {
       init(&modem, mux);
     }
 
-    bool init(TinyGsmSequansMonarch* modem, uint8_t mux = 1) {
+    bool init(TinyGsmSequansMonarchPycom* modem, uint8_t mux = 1) {
       this->at       = modem;
       sock_available = 0;
       prev_check     = 0;
@@ -95,8 +96,12 @@ class TinyGsmSequansMonarch
       // using modulus will force 6 back to 0
       if (mux >= 1 && mux <= TINY_GSM_MUX_COUNT) {
         this->mux = mux;
-      } else {
-        this->mux = (mux % TINY_GSM_MUX_COUNT) + 1;
+      } 
+      else if (mux == 0 ){
+        this->mux = 6;
+      }
+      else {
+        this->mux = 6;
       }
       at->sockets[mux % TINY_GSM_MUX_COUNT] = this;
 
@@ -106,6 +111,7 @@ class TinyGsmSequansMonarch
    public:
     virtual int connect(const char* host, uint16_t port, int timeout_s) {
       if (sock_connected) stop();
+      //stop(15000L);
       TINY_GSM_YIELD();
       rx.clear();
       sock_connected = at->modemConnect(host, port, mux, false, timeout_s);
@@ -134,13 +140,13 @@ class TinyGsmSequansMonarch
    * Inner Secure Client
    */
  public:
-  class GsmClientSecureSequansMonarch : public GsmClientSequansMonarch {
+  class GsmClientSecureSequansMonarchPycom : public GsmClientSequansMonarchPycom {
    public:
-    GsmClientSecureSequansMonarch() {}
+    GsmClientSecureSequansMonarchPycom() {}
 
-    explicit GsmClientSecureSequansMonarch(TinyGsmSequansMonarch& modem,
+    explicit GsmClientSecureSequansMonarchPycom(TinyGsmSequansMonarchPycom& modem,
                                            uint8_t                mux = 1)
-        : GsmClientSequansMonarch(modem, mux) {}
+        : GsmClientSequansMonarchPycom(modem, mux) {}
 
    protected:
     bool strictSSL = false;
@@ -183,7 +189,7 @@ class TinyGsmSequansMonarch
    * Constructor
    */
  public:
-  explicit TinyGsmSequansMonarch(Stream& stream) : stream(stream) {
+  explicit TinyGsmSequansMonarchPycom(Stream& stream) : stream(stream) {
     memset(sockets, 0, sizeof(sockets));
   }
 
@@ -193,7 +199,14 @@ class TinyGsmSequansMonarch
  protected:
   bool initImpl(const char* pin = NULL) {
     DBG(GF("### TinyGSM Version:"), TINYGSM_VERSION);
-    DBG(GF("### TinyGSM Compiled Module:  TinyGsmClientSequansMonarch"));
+    DBG(GF("### TinyGSM Compiled Module:  TinyGsmClientSequansMonarchPycom"));
+
+    /*
+    streamWrite("+++\n"); // Force the modem to enter AT command listening, pause the PPP mode
+    stream.flush();
+    TINY_GSM_YIELD(); 
+    if (waitResponse(1150L) != 1) { return false; }
+    */
 
     if (!testAT()) { return false; }
 
@@ -268,12 +281,12 @@ class TinyGsmSequansMonarch
 
   void maintainImpl() {
     for (int mux = 1; mux <= TINY_GSM_MUX_COUNT; mux++) {
-      GsmClientSequansMonarch* sock = sockets[mux % TINY_GSM_MUX_COUNT];
+      GsmClientSequansMonarchPycom* sock = sockets[mux % TINY_GSM_MUX_COUNT];
       if (sock && sock->got_data) {
         sock->got_data       = false;
         sock->sock_available = modemGetAvailable(mux);
         // modemGetConnected() always checks the state of ALL socks
-        modemGetConnected();
+        modemGetConnected(mux); //check states of socks and update them
       }
     }
     while (stream.available()) { waitResponse(15, NULL, NULL); }
@@ -283,7 +296,7 @@ class TinyGsmSequansMonarch
    * Power functions
    */
  protected:
-  bool restartImpl(const char* pin = NULL) {
+  bool restartImpl() {
     if (!testAT()) { return false; }
 
     sendAT(GF("+CFUN=0"));
@@ -295,7 +308,7 @@ class TinyGsmSequansMonarch
     res = waitResponse(20000L, GF("+SYSSTART"), GFP(GSM_ERROR));
     if (res != 1 && res != 3) { return false; }
     delay(1000);
-    return init(pin);
+    return init();
   }
 
   bool powerOffImpl() {
@@ -333,8 +346,8 @@ class TinyGsmSequansMonarch
     return (s == REG_OK_HOME || s == REG_OK_ROAMING);
   }
   String getLocalIPImpl() {
-    sendAT(GF("+CGPADDR=3"));
-    if (waitResponse(10000L, GF("+CGPADDR: 3,\"")) != 1) { return ""; }
+    sendAT(GF("+CGPADDR=1")); //sendAT(GF("+CGPADDR=3"));
+    if (waitResponse(10000L, GF("+CGPADDR: 1,\"")) != 1) { return ""; } //if (waitResponse(10000L, GF("+CGPADDR: 3,\"")) != 1) { return ""; }
     String res = stream.readStringUntil('\"');
     waitResponse();
     return res;
@@ -349,17 +362,20 @@ class TinyGsmSequansMonarch
     gprsDisconnect();
 
     // Define the PDP context (This uses context #3!)
-    sendAT(GF("+CGDCONT=3,\"IPV4V6\",\""), apn, '"');
+    //sendAT(GF("+CGDCONT=3,\"IPV4V6\",\""), apn, '"');
+    sendAT(GF("+CGDCONT=1,\"IPV4V6\",\""), apn, '"');
     waitResponse();
 
     // Set authentication
+    // AT+CGAUTH=<cid>[,<auth_prot>[,<userid>[,<password>]]]
     if (user && strlen(user) > 0) {
-      sendAT(GF("+CGAUTH=3,1,\""), user, GF("\",\""), pwd, GF("\""));
+      sendAT(GF("+CGAUTH=1,1,\""), user, GF("\",\""), pwd, GF("\"")); //sendAT(GF("+CGAUTH=3,1,\""), user, GF("\",\""), pwd, GF("\""));
       waitResponse();
     }
 
     // Activate the PDP context
-    sendAT(GF("+CGACT=1,3"));
+    // AT+CGACT=[<state>[,<cid>[,<cid>[,...]]]]
+    sendAT(GF("+CGACT=1,1"));//sendAT(GF("+CGACT=1,3"));
     waitResponse(60000L);
 
     // Attach to GPRS
@@ -385,8 +401,18 @@ class TinyGsmSequansMonarch
    */
  protected:
   String getSimCCIDImpl() {
-    sendAT(GF("+SQNCCID"));
+    sendAT(GF("+SQNCCID?")); //sendAT(GF("+SQNCCID"));
     if (waitResponse(GF(GSM_NL "+SQNCCID:")) != 1) { return ""; }
+    String res = stream.readStringUntil('\n');
+    waitResponse();
+    res.trim();
+    return res;
+  }
+
+protected:  //////////////////////////////// new
+  String getIMEIImpl() {
+    sendAT(GF("+CGSN"));
+    streamSkipUntil('\n');  // skip first newline
     String res = stream.readStringUntil('\n');
     waitResponse();
     res.trim();
@@ -456,17 +482,16 @@ class TinyGsmSequansMonarch
     //           = 600 (default)
     // <txTo1> = Data sending timeout in hundreds of milliseconds,
     // used for online data mode only = 50 (default)
-    sendAT(GF("+SQNSCFG="), mux, GF(",3,300,90,600,50"));
+    sendAT(GF("+SQNSCFG="), mux, GF(",1,300,90,600,50")); //GF(",3,300,90,600,50"));
     waitResponse(5000L);
 
     // Socket configuration extended
-    // AT+SQNSCFGEXT:<connId1>, <srMode1>, <recvDataMode1>, <keepalive1>,
-    // <listenAutoRsp1>, <sendDataMode1>
+    // AT+SQNSCFGEXT:<connId1>, <srMode1>, <recvDataMode1>, <keepalive1>, <listenAutoRsp1>, <sendDataMode1>
     // <connId1> = Connection ID = mux
     // <srMode1> = Send/Receive URC model = 1 - data amount mode
     // <recvDataMode1> = Receive data mode = 0  - data as text (1 for hex)
     // <keepalive1> = unused = 0
-    // <listenAutoRsp1> = Listen auto-response mode = 0 - deactivated
+    // <listenAutoRsp1> = Listen auto-response mode = 0 - deactivated 
     // <sendDataMode1> = Send data mode = 0  - data as text (1 for hex)
     sendAT(GF("+SQNSCFGEXT="), mux, GF(",1,0,0,0,0"));
     waitResponse(5000L);
@@ -483,8 +508,7 @@ class TinyGsmSequansMonarch
     // <lPort> = UDP connection local port, has no effect for TCP connections.
     // <connMode> = Connection mode = 1 - command mode connection
     // <acceptAnyRemote> = Applies to UDP only
-    sendAT(GF("+SQNSD="), mux, ",0,", port, ',', GF("\""), host, GF("\""),
-           ",0,0,1");
+    sendAT(GF("+SQNSD="), mux, ",0,", port, ',', GF("\""), host, GF("\""),",0,0,1");
     rsp = waitResponse((timeout_ms - (millis() - startMillis)), GFP(GSM_OK),
                        GFP(GSM_ERROR), GF("NO CARRIER" GSM_NL));
 
@@ -500,14 +524,15 @@ class TinyGsmSequansMonarch
     return connected;
   }
 
-  int modemSend(const void* buff, size_t len, uint8_t mux) {
+  int modemSend(const uint8_t* buff, size_t len, uint8_t mux) {//int modemSend(const void* buff, size_t len, uint8_t mux) {   
     if (sockets[mux % TINY_GSM_MUX_COUNT]->sock_connected == false) {
       DBG("### Sock closed, cannot send data!");
       return 0;
     }
 
-    sendAT(GF("+SQNSSENDEXT="), mux, ',', (uint16_t)len);
+    sendATsend(GF("+SQNSSENDEXT="), mux, ',', (uint16_t)len); 
     waitResponse(10000L, GF(GSM_NL "> "));
+
     stream.write(reinterpret_cast<const uint8_t*>(buff), len);
     stream.flush();
     if (waitResponse() != 1) {
@@ -515,28 +540,31 @@ class TinyGsmSequansMonarch
       return 0;
     }
     return len;
+    
+/*
+    uint8_t nAttempts = 5;
+    bool gotPrompt = false;
+    while (nAttempts > 0 && !gotPrompt) {
+       sendAT(GF("+SQNSSEND="), mux);
+       if (waitResponse(5000, GF(GSM_NL "> ")) == 1) {
+         gotPrompt = true;
+       }
+       nAttempts--;
+       delay(50);
+     }
+     if (gotPrompt) {
+       stream.write(reinterpret_cast<const uint8_t*>(buff), len);
+       stream.write(static_cast<char>(0x1A));
+       stream.flush();
+       if (waitResponse() != 1) {
+         DBG("### no OK after send");
+         return 0;
+       }
+       return len;
+     }
+     return 0;
+  */
 
-    // uint8_t nAttempts = 5;
-    // bool gotPrompt = false;
-    // while (nAttempts > 0 && !gotPrompt) {
-    //   sendAT(GF("+SQNSSEND="), mux);
-    //   if (waitResponse(5000, GF(GSM_NL "> ")) == 1) {
-    //     gotPrompt = true;
-    //   }
-    //   nAttempts--;
-    //   delay(50);
-    // }
-    // if (gotPrompt) {
-    //   stream.write(reinterpret_cast<const uint8_t*>(buff), len);
-    //   stream.write(reinterpret_cast<char>0x1A);
-    //   stream.flush();
-    //   if (waitResponse() != 1) {
-    //     DBG("### no OK after send");
-    //     return 0;
-    //   }
-    //   return len;
-    // }
-    // return 0;
   }
 
   size_t modemRead(size_t size, uint8_t mux) {
@@ -580,12 +608,15 @@ class TinyGsmSequansMonarch
     sendAT(GF("+SQNSS"));
     for (int muxNo = 1; muxNo <= TINY_GSM_MUX_COUNT; muxNo++) {
       if (waitResponse(GFP(GSM_OK), GF(GSM_NL "+SQNSS: ")) != 2) { break; }
+      
       uint8_t status = 0;
-      // if (streamGetIntBefore(',') != muxNo) { // check the mux no
-      //   DBG("### Warning: misaligned mux numbers!");
-      // }
-      streamSkipUntil(',');        // skip mux [use muxNo]
-      status = stream.parseInt() - 48;  // Read the status and map ascii code to int
+      int16_t nb_socket = streamGetIntBefore(',');
+      if (nb_socket != muxNo) { // check the mux no
+      DBG("### Warning: misaligned mux numbers!");
+      }
+
+      status = stream.parseInt();  // Read the status
+
       // if mux is in use, will have comma then other info after the status
       // if not, there will be new line immediately after status
       // streamSkipUntil('\n'); // Skip port and IP info
@@ -596,11 +627,13 @@ class TinyGsmSequansMonarch
       // SOCK_LISTENING              = 4,
       // SOCK_INCOMING               = 5,
       // SOCK_OPENING                = 6,
-      GsmClientSequansMonarch* sock = sockets[mux % TINY_GSM_MUX_COUNT];
-      if (sock) {
+      //GsmClientSequansMonarchPycom* sock = sockets[mux % TINY_GSM_MUX_COUNT];
+      GsmClientSequansMonarchPycom* sock = sockets[muxNo % TINY_GSM_MUX_COUNT];
+      if (sock && status != 0) {
         sock->sock_connected = ((status != SOCK_CLOSED) &&
                                 (status != SOCK_INCOMING) &&
                                 (status != SOCK_OPENING));
+        mux = muxNo;   
       }
     }
     waitResponse();  // Should be an OK at the end
@@ -685,8 +718,8 @@ class TinyGsmSequansMonarch
       if (data.length()) { DBG("### Unhandled:", data); }
       data = "";
     }
-    // data.replace(GSM_NL, "/");
-    // DBG('<', index, '>', data);
+    //data.replace(GSM_NL, "/");
+    //DBG('<', index, '>', data);
     return index;
   }
 
@@ -719,8 +752,9 @@ class TinyGsmSequansMonarch
   Stream& stream;
 
  protected:
-  GsmClientSequansMonarch* sockets[TINY_GSM_MUX_COUNT];
+  GsmClientSequansMonarchPycom* sockets[TINY_GSM_MUX_COUNT];
   const char*              gsmNL = GSM_NL;
+  const char*              gsmN = GSM_N;
 };
 
-#endif  // SRC_TINYGSMCLIENTSEQUANSMONARCH_H_
+#endif  // SRC_TINYGSMCLIENTSEQUANSMONARCHPYCOM_H_

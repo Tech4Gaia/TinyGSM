@@ -102,6 +102,13 @@ typedef TinyGsmSequansMonarch::GsmClientSequansMonarch TinyGsmClient;
 typedef TinyGsmSequansMonarch::GsmClientSecureSequansMonarch
     TinyGsmClientSecure;
 
+#elif defined(TINY_GSM_MODEM_SEQUANS_MONARCH_PYCOM)
+#include "TinyGsmClientSequansMonarchPycom.h"
+typedef TinyGsmSequansMonarchPycom                          TinyGsm;
+typedef TinyGsmSequansMonarchPycom::GsmClientSequansMonarchPycom TinyGsmClient;
+typedef TinyGsmSequansMonarchPycom::GsmClientSecureSequansMonarchPycom
+    TinyGsmClientSecure;
+
 #else
 #error "Please define GSM modem model"
 #endif

@@ -127,6 +127,11 @@ void loop() {
   modem.dtmfSend('A', 1000);
 #endif
 
+#if not defined(TINY_GSM_MODEM_SEQUANS_MONARCH_PYCOM)
+  modem.callAnswer();
+  modem.dtmfSend('A', 1000);
+#endif
+
 #endif
 
 // Test the SMS functions

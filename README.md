@@ -48,6 +48,7 @@ TinyGSM also pulls data gently from the modem (whenever possible), so it can ope
 - u-blox 2G, 3G, 4G, and LTE Cat1 Cellular Modems (many modules including LEON-G100, LISA-U2xx, SARA-G3xx, SARA-U2xx, TOBY-L2xx, LARA-R2xx, MPCI-L2xx)
 - u-blox LTE-M/NB-IoT Modems (SARA-R4xx, SARA-N4xx, _but NOT SARA-N2xx_)
 - Sequans Monarch LTE Cat M1/NB1 (VZM20Q)
+- Pycom FiPy and GPy (Sequans Monarch LTE Cat M1/NB1)
 - Quectel BG96
 - Quectel M95
 - Quectel MC60 ***(alpha)***
@@ -84,6 +85,7 @@ Watch this repo for new updates! And of course, contributions are welcome ;)
         - Quectel M95 - 6
         - Quectel MC60/MC60E - 6
         - Sequans Monarch - 6
+        - Pycom FiPy and GPy (Sequans Monarch - 6)
         - SIM 800/900 - 5
         - SIM 5360/5320/5300/7100 - 10
         - SIM7000 - 8
@@ -95,7 +97,7 @@ Watch this repo for new updates! And of course, contributions are welcome ;)
     - Not yet supported on any module, though it may be some day
 - SSL/TLS (HTTPS)
     - Supported on:
-        - SIM800, u-Blox, XBee _cellular_, ESP8266, and Sequans Monarch
+        - SIM800, u-Blox, XBee _cellular_, ESP8266, and Sequans Monarch ( + Pycom FiPy and GPy)
         - Note:  only some device models or firmware revisions have this feature (SIM8xx R14.18, A7, etc.)
     - Not yet supported on:
         - Quectel modems, SIM7000, SIM 5360/5320/7100, SIM 7500/7600/7800
