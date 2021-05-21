@@ -329,8 +329,15 @@ class TinyGsmSequansMonarchPycom
     return waitResponse() == 1;
   }
 
-  bool setPhoneFunctionality(uint8_t fun,
-                             bool reset = false) TINY_GSM_ATTR_NOT_IMPLEMENTED;
+  bool setPhoneFunctionalityImpl(uint8_t fun,bool reset = false){
+    if (!testAT()) { return false; }
+    sendAT(GF("+CFUN="),fun,',',reset);
+    int8_t res = waitResponse(20000L, GFP(GSM_OK), GFP(GSM_ERROR),
+                              GF("+SYSSTART"));
+    if (res != 1 && res != 3) { return false; }
+    return true;
+  }
+
 
   /*
    * Generic network functions
