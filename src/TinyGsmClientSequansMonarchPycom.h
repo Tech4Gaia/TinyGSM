@@ -222,6 +222,9 @@ class TinyGsmSequansMonarchPycom
 
     DBG(GF("### Modem:"), getModemName());
 
+    sendAT(GF("+CEREG=2")); // add operator recognition
+    waitResponse();
+
     // Make sure the module is enabled. Unlike others, the VZN20Q powers on
     // with CFUN=0 not CFUN=1 (that is, at minimum functionality instead of full
     // functionality The module cannot even detect the sim card if the cellular
@@ -439,6 +442,23 @@ protected:  //////////////////////////////// new
    */
  protected:
   // Follows all messaging functions per template
+    bool sendSMSImpl(const String& number, const String& text) {
+      sendAT(GF("+SQNSMSSEND=\""),number,GF("\",\""),text,GF("\""));
+      //AT+SQNSMSSEND="+33652588410","Hello World !" 
+
+      // Set preferred message format to text mode
+      //thisModem().sendAT(GF("+CMGF=1"));
+      //thisModem().waitResponse();
+      // Set GSM 7 bit default alphabet (3GPP TS 23.038)
+      //thisModem().sendAT(GF("+CSCS=\"GSM\""));
+      //thisModem().waitResponse();
+      //thisModem().sendAT(GF("+CMGS=\""), number, GF("\""));
+      //if (thisModem().waitResponse(GF(">")) != 1) { return false; }
+      //thisModem().stream.print(text);  // Actually send the message
+      //thisModem().stream.write(static_cast<char>(0x1A));  // Terminate the message
+      //thisModem().stream.flush();
+    return waitResponse(60000L) == 1;
+  }
 
   /*
    * Time functions
